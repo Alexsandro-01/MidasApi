@@ -1,17 +1,25 @@
+namespace MidasApi;
+
 using System.Reflection.Metadata.Ecma335;
 using Microsoft.AspNetCore.Mvc;
-
-namespace MidasApi;
+using MidasApi.Interfaces;
 
 [ApiController]
 [Route("[controller]")]
 public class BalanceController : ControllerBase
 {
-  [HttpPost]
-  public IActionResult InsertBalance(IFormFile formFile)
-  {
-    
+  private readonly IBalanceService _service;
 
-    return Ok();
+  public BalanceController(IBalanceService balanceService)
+  {
+    _service = balanceService;
+  }
+  
+  [HttpPost]
+  public IActionResult CreateBalance(IFormFile formFile)
+  {
+    var balance = _service.Create(formFile);
+
+    return Created("Balance",balance);
   }
 }
