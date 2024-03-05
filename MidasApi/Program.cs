@@ -1,5 +1,8 @@
 using MidasApi.Services;
 using MidasApi.Interfaces;
+using Midas.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +14,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Add services
+var connectionString = Environment.GetEnvironmentVariable("POSTGRES_CONNECTION_STRING");
 builder.Services.AddScoped<IBalanceService, BalanceService>();
+builder.Services.AddDbContext<DataBaseContext>(options =>
+  options.UseNpgsql(connectionString + "Database=midasdb;")
+);
 
 var app = builder.Build();
 
