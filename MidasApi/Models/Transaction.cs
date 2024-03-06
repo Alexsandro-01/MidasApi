@@ -24,8 +24,8 @@ public class Transaction
   )
   {
     Type = type;
-    Value = value / 100;
-    Date = date;
+    Value = value;
+    Date = date.ToUniversalTime();
     Description = description;
     TransactionId = transactionId;
   }
