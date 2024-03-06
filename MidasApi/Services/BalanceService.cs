@@ -3,15 +3,24 @@ using OFXParser.Entities;
 namespace MidasApi.Services;
 using MidasApi.Models;
 using MidasApi.Interfaces;
-
+using MidasApi.Repositories;
 
 public class BalanceService : IBalanceService
 {
-  public List<Transaction> Create(IFormFile formFile)
+  protected readonly TransactionRepository _repository;
+
+  public BalanceService(TransactionRepository transactionRepository)
+  {
+    _repository = transactionRepository;
+  }
+
+  public void Create(IFormFile formFile)
   {
     string filePath = WriteFile(formFile);
 
-    return ReadFile(filePath);
+    var transactions = ReadFile(filePath);
+
+    _repository.Create(transactions);
   }
 
   public string WriteFile(IFormFile formFile)
