@@ -4,7 +4,7 @@ using MidasApi.Models;
 
 public interface IBalanceService
 {
-  public List<Transaction> Create(IFormFile formFile);
+  public void Create(IFormFile formFile);
   public string WriteFile(IFormFile formFile);
   public List<Transaction> ReadFile(string filePath);
 }
