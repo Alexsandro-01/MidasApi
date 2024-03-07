@@ -5,6 +5,8 @@ namespace Midas.Models;
 
 public class DataBaseContext : DbContext
 {
+  public DbSet<Transaction> Transactions {get; set;}
+  public DbSet<Bank> Banks {get; set;}
   public DataBaseContext(DbContextOptions<DataBaseContext> options) : base(options) {
   }
 
@@ -13,7 +15,6 @@ public class DataBaseContext : DbContext
     this.Database.EnsureCreated();
   }
 
-  public DbSet<Transaction> Transactions {get; set;}
 
   protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
   {
