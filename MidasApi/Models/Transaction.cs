@@ -10,25 +10,11 @@ public class Transaction
   public string Type {get; set;}
   public double Value {get; set;}
   public DateTime Date {get; set;}
-  [Column(TypeName = "varchar(100)")]
+  [Column(TypeName = "varchar(200)")]
   public string Description {get; set;}
-  [Column(TypeName = "varchar(100)")]
+  [Column(TypeName = "varchar(200)")]
   public string TransactionId {get; set;}
-
-  public Transaction(
-    string type,
-    double value,
-    DateTime date,
-    string description,
-    string transactionId
-  )
-  {
-    Type = type;
-    Value = value;
-    Date = date.ToUniversalTime();
-    Description = description;
-    TransactionId = transactionId;
-  }
-
-  public Transaction() {}
+  [ForeignKey("BankId")]
+  public int BankId {get; set;}
+  public Bank Bank {get; set;}
 }
