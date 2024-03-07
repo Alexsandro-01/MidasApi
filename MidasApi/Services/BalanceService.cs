@@ -4,6 +4,7 @@ namespace MidasApi.Services;
 using MidasApi.Models;
 using MidasApi.Interfaces;
 using MidasApi.Repositories;
+using MidasApi.DTO;
 
 public class BalanceService : IBalanceService
 {
@@ -18,9 +19,9 @@ public class BalanceService : IBalanceService
   {
     string filePath = WriteFile(formFile);
 
-    var transactions = ReadFile(filePath);
+    TransactionsDto transactionsDto = ReadFile(filePath);
 
-    _repository.Create(transactions);
+    _repository.Create(transactionsDto.Transactions);
   }
 
   public string WriteFile(IFormFile formFile)
@@ -38,7 +39,7 @@ public class BalanceService : IBalanceService
     throw new ArgumentException("File size is 0");
   }
 
-  public List<Transaction> ReadFile(string filePath)
+  public TransactionsDto ReadFile(string filePath)
   {
     Extract ofxDoc = OFXParser.Parser.GenerateExtract(filePath);
 
@@ -47,15 +48,25 @@ public class BalanceService : IBalanceService
       throw new FileNotFoundException($"File \"{filePath}\" not found");
     }
 
-      var transactions = from operation in ofxDoc.Transactions
-                         select new Transaction(
-                          operation.Type,
-                          operation.TransactionValue,
-                          operation.Date,
-                          operation.Description,
-                          operation.Id
-                         );
+    Bank bank = new() {
+      AccountCode = ofxDoc.BankAccount.AccountCode,
+      AgencyCode = ofxDoc.BankAccount.AgencyCode,
+      BankCode = ofxDoc.BankAccount.Bank.Code,
+      BankName = ofxDoc.Header.BankName
+    };
 
-      return transactions.ToList();    
+    var transactions = from operation in ofxDoc.Transactions
+                        select new Transaction() {
+                        Type = operation.Type,
+                        Value = operation.TransactionValue,
+                        Date = operation.Date.ToUniversalTime(),
+                        Description = operation.Description,
+                        TransactionId = operation.Id
+                        };
+
+    return new TransactionsDto() {
+      Bank = bank,
+      Transactions = transactions.ToList()
+    };    
   }
 }
