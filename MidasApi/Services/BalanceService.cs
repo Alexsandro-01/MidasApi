@@ -9,10 +9,15 @@ using MidasApi.DTO;
 public class BalanceService : IBalanceService
 {
   protected readonly TransactionRepository _repository;
+  protected readonly BankService _bankService;
 
-  public BalanceService(TransactionRepository transactionRepository)
+  public BalanceService(
+    TransactionRepository transactionRepository,
+    BankService bankService  
+  )
   {
     _repository = transactionRepository;
+    _bankService = bankService;
   }
 
   public void Create(IFormFile formFile)
@@ -21,7 +26,23 @@ public class BalanceService : IBalanceService
 
     TransactionsDto transactionsDto = ReadFile(filePath);
 
-    _repository.Create(transactionsDto.Transactions);
+    // cria relacionamento entre as models do Bank
+    // e da Transaction.
+    transactionsDto.Bank.Transactions = transactionsDto.Transactions;
+
+    var existsBank = _bankService.GetBankByName(transactionsDto.Bank.BankName);
+
+    if (existsBank is null)
+    {
+      _bankService.Create(transactionsDto.Bank);
+      return;
+    }
+
+    // Adiciona as transactions para relacionamento
+    // com o bank do BD
+    existsBank.Transactions = transactionsDto.Transactions;
+
+    _bankService.Update(existsBank);
   }
 
   public string WriteFile(IFormFile formFile)
