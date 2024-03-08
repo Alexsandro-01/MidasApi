@@ -17,6 +17,8 @@ builder.Services.AddSwaggerGen();
 // Add services
 builder.Services.AddScoped<IBalanceService, BalanceService>();
 builder.Services.AddScoped<TransactionRepository>();
+builder.Services.AddScoped<BankRepository>();
+builder.Services.AddScoped<BankService>();
 builder.Services.AddScoped<DataBaseContext>();
 builder.Services.AddDbContext<DataBaseContext>();
 
